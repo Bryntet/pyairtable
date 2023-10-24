@@ -228,7 +228,7 @@ class Model:
         fields = self.to_record(only_writable=True)["fields"]
 
         if not self.id:
-            record = table.create(fields, typecast=self._typecast())
+            record = table.create(fields, return_fields_by_field_id=True, typecast=self._typecast())
             did_create = True
         else:
             record = table.update(self.id, fields, typecast=self._typecast())
@@ -340,7 +340,7 @@ class Model:
         if not self.id:
             raise ValueError("cannot be fetched because instance does not have an id")
 
-        record = self.get_table().get(self.id)
+        record = self.get_table().get(self.id, return_fields_by_field_id=True)
         unused = self.from_record(record)
         self._fields = unused._fields
         self.created_time = unused.created_time
@@ -369,7 +369,7 @@ class Model:
             *[f"RECORD_ID()={STR_VALUE(record_id)}" for record_id in record_ids]
         )
         records = [
-            cls.from_record(record) for record in cls.get_table().all(formula=formula)
+            cls.from_record(record) for record in cls.get_table().all(return_fields_by_field_id=True, formula=formula)
         ]
         records_by_id = {record.id: record for record in records}
         # Ensure we return records in the same order, and raise KeyError if any are missing
