@@ -12,11 +12,7 @@ from pyairtable.models.webhook import Webhook, WebhookNotification, WebhookPaylo
 @pytest.fixture
 def webhook(sample_json, base, api):
     webhook_json = sample_json("Webhook")
-    return Webhook.from_api(
-        api=api,
-        url=f"{base.webhooks_url}/{webhook_json['id']}",
-        obj=webhook_json,
-    )
+    return Webhook.from_api(webhook_json, api, context=base)
 
 
 @pytest.fixture
@@ -186,7 +182,7 @@ def test_notification_from_request(secret):
         "timestamp": "2022-02-01T21:25:05.663Z",
     }
     header = (
-        "hmac-sha256-e26da696a90933647bddc83995c3e1e3bb1c3d8ce1ff61cb7469767d50b2b2d4"
+        "hmac-sha256=e26da696a90933647bddc83995c3e1e3bb1c3d8ce1ff61cb7469767d50b2b2d4"
     )
 
     body = json.dumps(notification_json)
